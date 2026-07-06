@@ -4,7 +4,7 @@ description: Refine a development ticket into a validated, self-contained REQUIR
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.4"
+  version: "1.9"
 ---
 
 # Refine ticket
@@ -42,7 +42,11 @@ After gathering and code-verifying, **grill** the user — interview relentlessl
 what they could clarify — to close every remaining decision:
 
 - One question at a time, each with your recommended answer.
-- If a question is answerable from the codebase, answer it by exploring — don't ask.
+- If any part of a question is answerable from the codebase, explore it rather than ask — never
+  bundle a code-answerable sub-question into a grill. "Which name, type, shape, or pattern fits?" is
+  code-answerable: match the closest existing analogue, and let that verified convention outrank the
+  ticket's contrary suggestion. Grill only on what genuinely remains (product intent, cross-task
+  timing).
 - Walk each branch of the decision tree, resolving dependencies between decisions, until there is
   shared understanding and no open branch that blocks implementation.
 
@@ -52,19 +56,24 @@ Separate two kinds of uncertainty:
 - **Non-blocking** — a reasonable default exists but a human should confirm. Record under Open
   questions with your tentative answer.
 
-## Carry forward what you verified
-
-The facts you confirm while reading the code are part of the output, not scratch work. Where the
-relevant code lives, the shape of the data, the existing patterns to reuse — record them so the
-planner builds on them instead of rediscovering. Keep these as anchors for the requirements, not a
-solution design: *what is true today*, not *how to change it*.
-
 ## "Already exists" / "reuse X" is a directive
 
 When the ticket says a capability exists or names something to reuse, find what's *behind* it (the
 service method, query, SP it calls) and anchor the requirement on the smallest extension — relax a
 parameter, widen a filter, lift a guard. "Not an exact match" doesn't license a net-new build:
 reuse-vs-build-new is a **blocking** question for the user, never a silent default.
+
+## Reconcile against the design when one is referenced
+
+When a ticket points at a design (mockup, screenshot, prototype, design-tool link), that design is
+part of the spec. Visual decisions made without seeing it lock in wrong defaults.
+
+- If you cannot actually see the referenced design, ask for it before proceeding. A link you can't
+  render is not a design you've read. Prefer a copy already saved with the ticket over re-fetching.
+- Once you can see it, treat visual specifics as contract-level: currency, date, and number
+  formatting, empty and error states, label wording, spacing, alignment, iconography. The default
+  for "is this in the design?" is match the design, not do the minimum.
+- Any visual choice you'd otherwise make blind is an Open question, never silently defaulted.
 
 ## Output: the REQUIREMENTS file
 
@@ -82,19 +91,29 @@ Location:
   the ticket is bound to one) and the target path, **confirm both with the user**, then write
   `<slug>.REQUIREMENTS.md` there.
 
-Five parts (Overrides and Open questions may be empty — don't pad):
+Six parts (Verified codebase facts, Overrides, and Open questions may be empty — don't pad):
 
-1. **Context** — 1–3 sentences: the feature, what's in scope, what's out.
-2. **Requirements** — deduplicated functional + technical list. Tag each item with its ticket source
-   (e.g. `(Description)`, `(Technical Detail)`, `(AC)`). Group by area when it aids reading. Cite the
-   concrete file path / identifier inline wherever a requirement touches code; cite a reused pattern
-   as `path:line-range`.
-3. **Overrides** — where the ticket says one thing and the requirement says another (ticket is
+1. **Context** — 1–3 sentences: the feature, what's in scope, what's out. When the work is only
+   a slice of a larger feature, link the big-picture reference (parent story, final-goal/context
+   note, design) so the planner sees how it fits; a self-contained task needs none.
+2. **Verified codebase facts** — the facts confirmed while validating requirements, recorded so
+   the planner builds on them instead of rediscovering: where the relevant code lives, data
+   shapes, existing analogues, integration points. Byproduct only — never explore beyond what
+   refinement itself needs — and only facts a fresh session would need a search to rediscover.
+   Anchor to paths and identifiers; line numbers are hints — they drift. *What is true today*,
+   never *how to change it*. When non-empty, open with one line pinning the commit (short hash,
+   noting uncommitted changes if the tree is dirty) and absolute date, warning the code may have
+   changed since and specifics need re-verifying.
+3. **Requirements** — deduplicated functional + technical list. Tag each item with its ticket source
+   (e.g. `(Description)`, `(Technical Detail)`, `(AC)`). Group by area when it aids reading. Cite
+   the concrete file path / identifier inline wherever a requirement touches code; cite a reused
+   pattern as `path:line-range`.
+4. **Overrides** — where the ticket says one thing and the requirement says another (ticket is
    stale, wrong, or self-contradictory). Each entry: what the ticket says, what the code/AC shows,
    the resulting requirement.
-4. **Open questions** — non-blocking ambiguities, each with your tentative answer and why it's
+5. **Open questions** — non-blocking ambiguities, each with your tentative answer and why it's
    non-blocking. Blocking questions never appear here.
-5. **Acceptance criteria** — flat, verifiable checklist the implementation must satisfy.
+6. **Acceptance criteria** — flat, verifiable checklist the implementation must satisfy.
 
 Each requirement is self-contained; user-facing strings that must stay in a given language are
 quoted verbatim.
@@ -117,3 +136,12 @@ claude --name create-plan-<slug> "/create-implementation-plan <path>.REQUIREMENT
 
 The phase prefix (`create-plan-`, `execute-plan-`, …) keeps the pipeline phases distinguishable in
 the session list.
+
+Then offer the plan phase's alternative — clearing the current session instead (vendor-agnostic —
+`/clear` below is only the example; use the clear command of the agent tool in use):
+
+OR /clear and run:
+
+```
+/create-implementation-plan <path>.REQUIREMENTS.md
+```

@@ -1,11 +1,10 @@
 ---
 name: fetch-pr-review
 description: Fetch all reviewer comments from a pull request URL (GitHub, Azure DevOps, …) and save them as a self-contained markdown PR-REVIEW file in the task's planning directory. Fetch only — no fixing or replying.
-context: fork
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.1"
+  version: "1.3"
 ---
 
 # PR review fetcher
@@ -107,4 +106,13 @@ the example), naming the session `refine-<slug>`:
 
 ```
 claude --name refine-<slug> "/refine-ticket <output-dir>/<slug>.PR-REVIEW.md"
+```
+
+Then offer the alternative — clearing the current session instead (vendor-agnostic — `/clear` below
+is only the example; use the clear command of the agent tool in use):
+
+OR /clear and run:
+
+```
+/refine-ticket <output-dir>/<slug>.PR-REVIEW.md
 ```

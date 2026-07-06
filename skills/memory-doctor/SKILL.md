@@ -1,11 +1,11 @@
 ---
 name: memory-doctor
-description: Audit the current project's agent-memory and, block by block, relocate each entry into a user-controlled home (project doc/skill/rule or user-level skill/rule) or archive it — draining memory so nothing uncontrolled accumulates in the agent's context. Manual-only.
+description: Audit the current project's agent-memory and, block by block, relocate each entry into a user-controlled home (project doc/skill/rule or user-level skill/rule) or archive it — draining memory so nothing uncontrolled accumulates in the agent's context.
 disable-model-invocation: true
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.0"
+  version: "1.4"
 ---
 
 # Memory doctor
@@ -21,8 +21,9 @@ user — not the memory store — decides what reaches the context window.
 
 **The skill guesses and recommends; the user decides.** Every verdict, scope, form, and target is a
 *proposal* the user confirms or flips. When unsure, ask. Nothing is moved, deleted, or written
-without explicit per-item approval. For every block the user gets the whole menu — relocate, delete,
-keep — never just the recommended verdict.
+without explicit per-item approval. For every block the user gets the whole fixed menu —
+relocate/merge, archive (delete), keep, or a custom action they type — never just the recommended
+verdict, never a pruned subset.
 
 ## Locate the memory
 
@@ -41,18 +42,25 @@ flat file with no index, treat each section as a block.
 
 1. **Scan (read-only).** Read every block. To judge staleness you may read or grep project files,
    git, and governing docs — but make **no** mutation in this phase.
-2. **Triage table.** Present all blocks in one table so the user sees the whole memory at once:
-   `block | content (verbatim excerpt or summary, ≤10 lines) | verdict | justification | evidence
-   (duplicate/garbage) | scope/form/path (relocate)`. Truncate long blocks, but show enough that the
-   user can judge each without opening the file.
-3. **Execute, block by block in strict index order (1 → last).** Walk blocks by their table index;
-   **never group or reorder by verdict** (don't do "all duplicates first, relocates next"). For each
-   block, present its recommended verdict *and* the full option menu — relocate/merge to the
-   recommended home, delete (archive), keep as-is, plus any block-specific alternative — then apply
-   only the user's chosen action before moving to the next. The verdict is only a default; never
-   skip a block or act on one without explicit per-block confirmation. If you batch decisions into
-   one prompt, it must cover **every** block as contiguous index ranges (e.g. 1-4, then 5-8) — never
-   a verdict-grouped subset.
+2. **Triage table.** Present all blocks as ONE narrow overview table that renders as a table, not a
+   wrapped list: `# | block | content (≤1 line) | verdict | why + target`. Every cell is a summary:
+   the `content` cell one line, the `why + target` cell folding justification, duplicate/garbage
+   evidence, and relocate scope/form/path. Full detail for a block waits for its question (step 3).
+   The table numbers each block (1…N); refer to a block by that number, in order, and never re-list
+   block numbers out of sequence in surrounding prose.
+3. **Decide, one question per block, in strict index order (1 → last).** Walk blocks by their table
+   index — **never group, batch, or reorder blocks**, even when adjacent ones share a verdict; ask
+   about exactly one block per prompt. For each, lead with the detail the table only summarized — a
+   verbatim content excerpt plus the full justification — so the user can judge, then present its
+   recommended verdict as the default, then the **same fixed menu every time** regardless of that
+   verdict — relocate/merge, archive (delete),
+   keep, or other (the user types a custom action). Never drop an option because it seems not to
+   apply; the user must never have to type a standard option by hand. Record each confirmed choice
+   and move straight to the next block — **act on nothing yet**; never skip a block or record a
+   choice without its own explicit confirmation.
+4. **Execute, once every block is decided.** Apply the recorded actions in index order, honoring the
+   Safety rules below (relocate-before-delete, honest index). Doing all the work in one pass —
+   never interleaved with the questions — keeps the decision phase a fast, uninterrupted Q&A.
 
 ## Verdicts
 
@@ -83,9 +91,9 @@ If using Claude Code: user-level config lives in `~/.claude/skills` and `~/.clau
 project-level in the repo's `.claude/skills` and `.claude/rules`.
 
 **Do the relocation through [self-improve](../self-improve/SKILL.md)** — it finds the home, drafts
-the least-text edit, and applies it (routing skill edits through compact-skill-creator). This skill
-owns discovery, enumeration, classification, and the archive/delete path; self-improve owns writing
-the content into its home.
+the least-text edit, and applies it (routing the write through the matching compaction skill). This
+skill owns discovery, enumeration, classification, and the archive/delete path; self-improve owns
+writing the content into its home.
 
 ## Safety
 

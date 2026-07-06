@@ -11,6 +11,9 @@
       "items": {
         "self-improve-on-correction.md": {
           "requires": ["skills/self-improve"]
+        },
+        "compact-governing-docs.md": {
+          "requires": ["skills/compact-skill-creator", "skills/compact-docs-writer"]
         }
       }
     },
@@ -18,11 +21,17 @@
       "type": "skills",
       "path": "skills",
       "items": {
+        "compact-skill-creator": {
+          "requires": ["skills/compact-docs-writer"]
+        },
         "self-improve": {
-          "requires": ["skills/compact-skill-creator"]
+          "requires": ["skills/compact-skill-creator", "skills/compact-docs-writer"]
         },
         "memory-doctor": {
           "requires": ["skills/self-improve"]
+        },
+        "review-ticket": {
+          "requires": ["skills/fetch-ticket"]
         }
       }
     }

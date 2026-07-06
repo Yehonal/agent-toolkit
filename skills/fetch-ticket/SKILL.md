@@ -1,11 +1,10 @@
 ---
 name: fetch-ticket
 description: Fetch a ticket/issue from its tracker (Azure DevOps, Jira, GitHub, …) and save it as a self-contained markdown ticket file. Fetch only — no analysis or planning.
-context: fork
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.2"
+  version: "1.6"
 ---
 
 # Ticket Fetcher
@@ -18,8 +17,11 @@ Identify the tracker from the input (URL host, or id shape) and fetch through th
 server — e.g. **Azure DevOps MCP** for ADO work items, **Atlassian MCP** for Jira issues, **GitHub
 MCP / `gh`** for GitHub issues. Use whichever equivalent tools are connected; tool name prefixes
 vary by config. Resolve once any handle the MCP needs (e.g. Atlassian `cloudId`, ADO project) and
-reuse it. If the input is ambiguous, or no matching MCP is connected, ask the user / stop — don't
-guess.
+reuse it. If the input is ambiguous, ask the user — don't guess. If no matching MCP is connected:
+a public ticket may be scraped from its URL as a fallback (you may still suggest installing the
+matching MCP when it would do the job better); a private one can't — the URL returns a login page,
+not the ticket — so stop and tell the user to install and authenticate the matching MCP server,
+then re-run.
 
 ## Your task
 
@@ -103,8 +105,10 @@ across both combined.
 
 **Always try to fetch — across every connected MCP.** Beyond tracker-hosted attachments, the ticket
 may link external assets (e.g. a Confluence/ADO resource — for design-tool links such as Figma or
-Zeplin see Design references below) reachable through their own MCP. Use whichever MCP fits the
-source to pull them down; don't pre-declare a link unfetchable. If a fitting MCP is connected but
+Zeplin see Design references below) reachable through their own MCP, including spec/doc files in a
+linked git repo (fetch their content via git or the repo MCP, save into the output dir under their
+own filename). Use whichever MCP fits the source to pull them down; don't pre-declare a link
+unfetchable. If a fitting MCP is connected but
 **not authenticated**, don't silently skip — proactively run its auth flow (surface the login URL,
 complete the handshake) without waiting to be asked, then fetch. When it's unclear whether an asset
 can or should be downloaded, ask the user.
@@ -125,9 +129,9 @@ character boundary signals base64 truncation. On failure, re-download to disk; i
 as **not downloaded** and warn — never reference a corrupt file. Then, per file:
 
 - **Downloaded** → reference the local file.
-- **Not downloaded** (no fitting MCP/attachment tool, auth that couldn't be completed, etc.) → still reference the local file and
-  the source URL, and add it to the list to warn about. Don't block — the ticket is usable either
-  way.
+- **Not downloaded** (no fitting MCP/attachment tool, auth that couldn't be completed, etc.) →
+  still reference the local file and the source URL, and add it to the list to warn about. Don't
+  block — the ticket is usable either way.
 
 Image → embed; non-image (PDF, .docx, …) → link instead:
 
@@ -164,10 +168,11 @@ _Figma · file `<fileKey>` · node `<nodeId>` · [source](<url>)_
 
 ## Boundaries
 
-- **Do not** analyze, plan, or read source files for context.
+- **Do not** analyze, plan, or explore the codebase for context — this does not exempt files the
+  ticket explicitly links, which you still fetch (see Attachments).
 - **Do not** modify the ticket in its tracker — fetching is **read-only** (no comments, transitions,
   edits, worklogs).
-- The only files you create: the `.TICKET.md` and its attachments.
+- The only files you create: the `.TICKET.md`, its attachments, and any linked docs you fetched.
 
 ## Next step
 
@@ -181,4 +186,13 @@ is only the example), naming the session `refine-<slug>`:
 
 ```
 claude --name refine-<slug> "/refine-ticket <output-dir>/<id>-<slug>.TICKET.md"
+```
+
+Then offer the alternative — clearing the current session instead (vendor-agnostic — `/clear` below
+is only the example; use the clear command of the agent tool in use):
+
+OR /clear and run:
+
+```
+/refine-ticket <output-dir>/<id>-<slug>.TICKET.md
 ```
