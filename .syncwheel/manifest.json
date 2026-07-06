@@ -7,12 +7,29 @@
     "base_ref": "upstream/main"
   },
   "integration": {
-    "branch": "main",
+    "branch": "main-integration",
     "base": "upstream/main",
-    "strategy": "cherry-pick",
-    "stacks": []
+    "strategy": "merge-stacks",
+    "stacks": [
+      "self-improve-cross-harness"
+    ]
   },
-  "stacks": [],
+  "stacks": [
+    {
+      "id": "self-improve-cross-harness",
+      "branch": "pr/self-improve-cross-harness",
+      "base": "upstream/main",
+      "target_remote": "upstream",
+      "target_branch": "main",
+      "integration_branch": "main-integration",
+      "commits": [
+        "559748d1ec894bb617d2a4fe96a461fbb2fe9922"
+      ],
+      "meta": {
+        "purpose": "Cross-harness self-improve activation"
+      }
+    }
+  ],
   "syncwheel_tracking": "git-tracked",
   "syncwheel_worktree_root": ".syncwheel/wt"
 }
