@@ -1,11 +1,12 @@
 ---
 name: review-code-assistant
-description: Assist a human reviewing a pull request or branch locally: diff a source branch against its target (auto-detected or from a PR link) and return concise, human-voice review comments with file:line locations. Read-only, never posts.
+description: Assist a human reviewing a pull request or branch locally — diff a source branch against its target (auto-detected or from a PR link) and return concise, human-voice review comments with file and line locations. Read-only, never posts.
 disable-model-invocation: true
+type: flow
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.4"
+  version: "1.7"
 ---
 
 # Review code assistant
@@ -87,8 +88,9 @@ The core rule. A comment may exist only when it points to concrete evidence of o
    pattern visible in the surrounding code).
 3. **It is a concrete, behavior-preserving simplification** — needless indirection or duplication
    you can collapse with certainty, naming the exact redundancy and the smaller form. (E.g. a
-   non-exported const in the class's own file that only aliases one class field is collapsible; an
-   exported or separate-file const is fine, it may be reused elsewhere.)
+   non-exported const in the class's own file that only aliases one class field is collapsible, or
+   the same expression repeated across a template, collapsed into one named derivation; an exported
+   or separate-file const is fine, it may be reused elsewhere.)
 
 If you cannot name the evidence — the exact bug, rule, or redundancy — do not comment. Hedge
 phrases that signal a guess with no evidence ("there might be", "this could potentially",
@@ -147,7 +149,9 @@ Local text only; write no file unless the user later asks to save it.
 
   The explanation is your note to the user and can be direct. Add **Suggested comment** only when it
   adds something beyond the explanation (nuance, or softer phrasing); if it would just restate the
-  explanation, give one or the other, never both near-identical. Before writing any
+  explanation, give one or the other, never both near-identical. When the fix is itself a snippet —
+  most often an explanatory code comment — the suggested comment can be that snippet, ready to
+  paste, rather than prose asking the author to write it. Before writing any
   **Suggested comment**, actually invoke **/use-conversational-language** and follow it —
   reciting its rules from memory does not count.
   That brevity and softness is tone, not hedging: it never lowers the evidence bar from *Grounded,

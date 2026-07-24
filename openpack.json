@@ -17,6 +17,9 @@
         },
         "write-realistic-texts.md": {
           "requires": ["skills/use-conversational-language"]
+        },
+        "no-nonsense-comments.md": {
+          "requires": ["skills/use-conversational-language"]
         }
       }
     },
@@ -41,6 +44,9 @@
         },
         "review-code-assistant": {
           "requires": ["skills/use-conversational-language"]
+        },
+        "check-ticket-implementation": {
+          "requires": ["skills/fetch-ticket"]
         }
       }
     }

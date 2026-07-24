@@ -4,7 +4,7 @@ description: Turn a refined requirements document into a structured implementati
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.5"
+  version: "1.7"
 ---
 
 # Create Implementation Plan
@@ -47,6 +47,12 @@ design, not a separate phase that runs before planning starts.
    reasonable approach exists. Typical forks to design through (and grill on when the code can't
    settle them): whether to refactor existing code to reuse it or build anew; which API or interface
    to call; which unit tests to add; code style, file names, and folder structure.
+
+   **Docs generally outrank prior art.** A mirrored analogue doesn't override a documented rule,
+   and a rule's rationale doesn't license exceptions to it — existing code may predate the rule.
+   When docs and prior art conflict and you're unsure how to resolve it, ask the user; a deviation
+   the user approves is recorded in the plan's Overrides section, so the execution session knows
+   it's deliberate.
 
    **Grill the user along the way.** Whenever the approach hits a fork you can't settle from the
    code, stop and resolve it with the user before continuing — don't guess, and don't defer the
@@ -130,7 +136,7 @@ where `<slug>` is the plan filename's slug (without id prefix or extension), so 
 recognizable in the session list, e.g.:
 
 ```
-claude --name execute-plan-report-approval "Execute the plan .claude/plans/123-report-approval/123-report-approval.PLAN.md"
+claude --name execute-plan-report-approval "Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md"
 ```
 
 Then offer the alternative — clearing the current session instead (vendor-agnostic — `/clear` below
@@ -139,5 +145,5 @@ is only the example; use the clear command of the agent tool in use):
 OR /clear and run:
 
 ```
-Execute the plan .claude/plans/123-report-approval/123-report-approval.PLAN.md
+Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md
 ```
