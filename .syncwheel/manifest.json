@@ -23,7 +23,8 @@
       "target_branch": "main",
       "integration_branch": "main-integration",
       "commits": [
-        "559748d1ec894bb617d2a4fe96a461fbb2fe9922"
+        "559748d1ec894bb617d2a4fe96a461fbb2fe9922",
+        "93e6869aa43d523173249dba1d59c99941697aa9"
       ],
       "meta": {
         "purpose": "Cross-harness self-improve activation"
