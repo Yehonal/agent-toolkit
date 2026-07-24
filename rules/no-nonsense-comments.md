@@ -1,11 +1,12 @@
 ---
 name: no-nonsense-comments
-description: Code comments are written for future readers with no context on our session. No process, no narration, no self-reference.
+description: Code comments are written for future readers with no context on our session. No process, no narration, no self-reference, no AI-sounding voice.
 ---
 
 Prefer no comment over a low-value one. Every comment must still make sense to someone who checked
 out this branch with zero knowledge of our session. Keep comments short: 1 or 2 lines are typically
-enough.
+enough, and length itself is an AI tell — when a comment outgrows that, keep only the invariant the
+next editor must not break; the rest goes to the tracker or the PR description.
 
 Don't write:
 - **Process / change narration** — "see plan", "as discussed", "now also handles X", "switched from
@@ -13,10 +14,20 @@ Don't write:
 - **Self-reference** — "I added", "Claude generated", "AI-suggested".
 - **Restating the code** — `// increment counter` above `counter++`.
 - **Dead context** — references to removed code or earlier iterations.
+- **Future-work pointers & bug write-ups** — follow-up tickets/PBIs, "will be handled in X",
+  roadmap notes, descriptions of a known bug or shortcoming: the tracker owns those, not the
+  source code. A one-line hazard warning with a ticket reference is fine; the bug's mechanics
+  live in the ticket.
 
 Do write, when it adds value: the non-obvious **why** (trade-offs, constraints, workarounds);
-invariants and assumptions; easily-missed edge cases; external references (ticket IDs, RFCs, spec
-sections); warnings about non-obvious failure or ordering needs.
+invariants and assumptions; easily-missed edge cases; external references explaining the code as
+it is (ticket IDs, RFCs, spec sections); warnings about non-obvious failure or ordering needs.
+"Non-obvious" means beyond a competent dev's common knowledge — standard-practice rationale
+doesn't qualify.
+
+Comments you do write must sound like a colleague typed them, not an AI: actually invoke the
+`use-conversational-language` skill and follow its conventions — reciting them from memory does
+not count.
 
 Bad: `// Overrides default per plan; previously returned null`
 

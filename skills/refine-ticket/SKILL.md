@@ -1,17 +1,21 @@
 ---
 name: refine-ticket
-description: Refine a development ticket into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
+description: Refine a development ticket — or brainstorm a raw idea — into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.9"
+  version: "1.12"
 ---
 
 # Refine ticket
 
-The **Refine** phase of Refine → Plan → Act: turn a raw ticket into a validated requirements
-document a fresh session can plan from. Analysis only — it defines **what** must be true when the
-work is done, never **how** to build it, and never touches code.
+The **Refine** phase of Refine → Plan → Act: turn a raw ticket — or an idea to brainstorm — into a
+validated requirements document a fresh session can plan from. Analysis only — it defines **what**
+must be true when the work is done, never **how** to build it, and never touches code.
+
+An idea is a ticket that doesn't exist yet: treat the user's words as the ticket text, and grill
+to shape the idea itself — goal, in vs out of scope — before closing the branches that block
+implementation.
 
 ## What, not how — but verified against the code
 
@@ -75,6 +79,16 @@ part of the spec. Visual decisions made without seeing it lock in wrong defaults
   for "is this in the design?" is match the design, not do the minimum.
 - Any visual choice you'd otherwise make blind is an Open question, never silently defaulted.
 
+## Read relevant related tickets — context, not scope
+
+When the ticket references others that matter to it (BE/FE counterparts, dependencies, follow-ups),
+read them too — they complete the picture and sharpen how this ticket's requirements are meant. A
+`## Ticket set` section in the ticket file lists locally fetched siblings: read every linked
+`.TICKET.md` before grilling; for tracker-only references, judge relevance before fetching. What a
+sibling supplies — execution order, contracts it owns, superseded-spec notes — is context only,
+never requirements: scope stays this ticket's, and anything a sibling suggests changing is a
+question for the user, never a silent scope change.
+
 ## Output: the REQUIREMENTS file
 
 Must stand alone for a **fresh session** with no memory of this conversation and no access to the
@@ -85,11 +99,10 @@ Location:
 - If the ticket input is a **local file**, write the REQUIREMENTS file in the **same directory**,
   replacing `.TICKET` with `.REQUIREMENTS` (e.g. `FOO.TICKET.md` → `FOO.REQUIREMENTS.md`); if the
   input doesn't follow that convention, append `.REQUIREMENTS` before `.md`.
-- If there is **no local ticket file** (a tracker URL/ID, pasted text), follow the project's
-  planning convention for where planning documents live (per the project's or user's rules — don't
-  assume a fixed path, ask when not sure). Propose a kebab-case `<slug>` (prefix the tracker id when
-  the ticket is bound to one) and the target path, **confirm both with the user**, then write
-  `<slug>.REQUIREMENTS.md` there.
+- If there is **no local ticket file** (a tracker URL/ID, pasted text), follow the project's/user's
+  convention for where planning documents live (default: `.agents/plans/`). Propose a kebab-case
+  `<slug>` (prefix the tracker id when the ticket is bound to one) and the target path, **confirm
+  both with the user**, then write `<slug>/<slug>.REQUIREMENTS.md` there.
 
 Six parts (Verified codebase facts, Overrides, and Open questions may be empty — don't pad):
 

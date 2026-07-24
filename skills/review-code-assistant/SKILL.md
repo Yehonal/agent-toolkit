@@ -1,11 +1,12 @@
 ---
 name: review-code-assistant
-description: Assist a human reviewing a pull request or branch locally: diff a source branch against its target (auto-detected or from a PR link) and return concise, human-voice review comments with file:line locations. Read-only, never posts.
+description: Assist a human reviewing a pull request or branch locally — diff a source branch against its target (auto-detected or from a PR link) and return concise, human-voice review comments with file and line locations. Read-only, never posts.
 disable-model-invocation: true
+type: flow
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.2"
+  version: "1.7"
 ---
 
 # Review code assistant
@@ -87,8 +88,9 @@ The core rule. A comment may exist only when it points to concrete evidence of o
    pattern visible in the surrounding code).
 3. **It is a concrete, behavior-preserving simplification** — needless indirection or duplication
    you can collapse with certainty, naming the exact redundancy and the smaller form. (E.g. a
-   non-exported const in the class's own file that only aliases one class field is collapsible; an
-   exported or separate-file const is fine, it may be reused elsewhere.)
+   non-exported const in the class's own file that only aliases one class field is collapsible, or
+   the same expression repeated across a template, collapsed into one named derivation; an exported
+   or separate-file const is fine, it may be reused elsewhere.)
 
 If you cannot name the evidence — the exact bug, rule, or redundancy — do not comment. Hedge
 phrases that signal a guess with no evidence ("there might be", "this could potentially",
@@ -147,17 +149,13 @@ Local text only; write no file unless the user later asks to save it.
 
   The explanation is your note to the user and can be direct. Add **Suggested comment** only when it
   adds something beyond the explanation (nuance, or softer phrasing); if it would just restate the
-  explanation, give one or the other, never both near-identical. A suggested comment is the line a
-  real reviewer drops: short, casual, friendly, usually one sentence. Lead with the ask; add a brief
-  why only when it isn't obvious, and skip the cause-hypothesis. Reach for the plainest verb
-  ("extract", not "pull ... into a shared helper"), point by similarity ("this is similar to `X`")
-  rather than verdicts ("basically a copy of"), and soften asks with "maybe we can/should". Often a
-  question even when you are sure the code is wrong, naming the exact symbol (e.g. "where is `FOO`
-  used?").
-  Even a plain nit stays warm and in collaborative "we" voice, never a curt bare statement. Never
-  use dashes (em or en); write the way people actually type. This brevity and softness is tone, not
-  hedging: it never lowers the evidence bar from *Grounded, not speculative*. Stay grounded in
-  *what* to raise, human and brief in *how* you word it.
+  explanation, give one or the other, never both near-identical. When the fix is itself a snippet —
+  most often an explanatory code comment — the suggested comment can be that snippet, ready to
+  paste, rather than prose asking the author to write it. Before writing any
+  **Suggested comment**, actually invoke **/use-conversational-language** and follow it —
+  reciting its rules from memory does not count.
+  That brevity and softness is tone, not hedging: it never lowers the evidence bar from *Grounded,
+  not speculative* — stay grounded in *what* to raise, human and brief in *how* you word it.
 - **Order mirrors the diff** so the user can read the PR in one window and copy-paste straight down
   in another: files in the diff's own order, ascending line number within a file, grouped by file
   when a file has several comments. This order is absolute: never reorder by a finding's perceived

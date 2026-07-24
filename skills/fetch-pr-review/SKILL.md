@@ -4,14 +4,14 @@ description: Fetch all reviewer comments from a pull request URL (GitHub, Azure 
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.3"
+  version: "1.6"
 ---
 
 # PR review fetcher
 
 **Fetch only** — capture the review feedback left on a pull request; never fix code, reply, or
 judge the comments. Output is a self-contained `.PR-REVIEW.md` a fresh session can pick up and act
-on (e.g. via `/refine-ticket`).
+on (e.g. via `/refine-pr-review`).
 
 ## Source & access
 
@@ -39,13 +39,16 @@ an answer.
      feedback.
 3. **Determine each thread's status** (see Status flags).
 4. **Decide the output directory** — the planning directory of the task the PR belongs to,
-   following the project's/user's convention for where plans live. Guess the existing
-   `<id>-<slug>/` subdirectory from PR context (linked ticket id, branch name, PR title) and
-   **confirm the guess with the user**; when not sure, always ask. If no matching directory
+   following the project's/user's convention for where plans live (default: `.agents/plans/`).
+   Guess the task's existing home
+   from PR context (linked ticket id, branch name, PR title) — its `<id>-<slug>/` subdirectory, or
+   the shared parent/group directory holding its `<id>-<slug>.TICKET.md` when the ticket lives
+   flat there — and **confirm the guess with the user**; when not sure, always ask. If no matching
    exists, propose a new `<id>-<slug>` (ticket id prefix when bound to one, kebab-case slug from
    the PR title), confirm, and create it.
-5. **Pick the file name** — `<slug>.PR-REVIEW.md`, where `<slug>` is the planning directory name
-   (e.g. `1234-some-task.PR-REVIEW.md`). If it already exists and this is a new review round,
+5. **Pick the file name** — `<slug>.PR-REVIEW.md`, where `<slug>` is the planning directory name —
+   in a shared directory, the ticket's own `<id>-<slug>` instead (e.g.
+   `1234-some-task.PR-REVIEW.md`). If it already exists and this is a new review round,
    write `<slug>.PR-REVIEW-2.md`, `-3`, … — **never overwrite**; history per round is kept on
    purpose.
 6. **Write the document** (see structure below).
@@ -102,10 +105,10 @@ State clearly when done, using **project-relative paths**. List any thread whose
 user decision and how it was marked. Then hand off the next phase as a
 **single copy-pasteable launch command** — session name and prompt combined, so one paste starts the
 session. Use the launch syntax of the agent tool in use (vendor-agnostic — `claude` below is only
-the example), naming the session `refine-<slug>`:
+the example), naming the session `refine-pr-<slug>`:
 
 ```
-claude --name refine-<slug> "/refine-ticket <output-dir>/<slug>.PR-REVIEW.md"
+claude --name refine-pr-<slug> "/refine-pr-review <output-dir>/<slug>.PR-REVIEW.md"
 ```
 
 Then offer the alternative — clearing the current session instead (vendor-agnostic — `/clear` below
@@ -114,5 +117,5 @@ is only the example; use the clear command of the agent tool in use):
 OR /clear and run:
 
 ```
-/refine-ticket <output-dir>/<slug>.PR-REVIEW.md
+/refine-pr-review <output-dir>/<slug>.PR-REVIEW.md
 ```
